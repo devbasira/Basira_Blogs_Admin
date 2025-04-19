@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getBlog, updateBlogMetadata } from '@/lib/api';
@@ -42,17 +41,19 @@ const BlogMetadata = () => {
   const { data: blog, isLoading, isError } = useQuery({
     queryKey: ['blog', id],
     queryFn: () => getBlog(id || ''),
-    onSuccess: (data) => {
-      if (data) {
-        setFormData({
-          tags: data.tags || [],
-          categories: data.categories || [],
-          published_to: data.published_to || [],
-          status: data.status || 'draft',
-        });
-      }
-    },
+    enabled: !!id
   });
+
+  useEffect(() => {
+    if (blog) {
+      setFormData({
+        tags: blog.tags || [],
+        categories: blog.categories || [],
+        published_to: blog.published_to || [],
+        status: blog.status || 'draft',
+      });
+    }
+  }, [blog]);
 
   const addTag = () => {
     if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {

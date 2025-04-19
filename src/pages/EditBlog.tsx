@@ -25,17 +25,32 @@ const EditBlog = () => {
   const { data: blog, isLoading, isError } = useQuery({
     queryKey: ['blog', id],
     queryFn: () => getBlog(id || ''),
-    onSuccess: (data) => {
-      if (data) {
-        setFormData({
-          title: data.title,
-          subheading: data.subheading,
-          body: data.body,
-          images: data.images,
-        });
+    enabled: !!id,
+    meta: {
+      onSuccess: (data: any) => {
+        if (data) {
+          setFormData({
+            title: data.title,
+            subheading: data.subheading,
+            body: data.body,
+            images: data.images,
+          });
+        }
       }
-    },
+    }
   });
+
+  // Use this effect to set form data when blog is loaded
+  React.useEffect(() => {
+    if (blog) {
+      setFormData({
+        title: blog.title,
+        subheading: blog.subheading,
+        body: blog.body,
+        images: blog.images,
+      });
+    }
+  }, [blog]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
