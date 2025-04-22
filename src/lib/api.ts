@@ -30,11 +30,17 @@ export const uploadImage = async (file: File): Promise<string | null> => {
 };
 
 // Get all blogs
-export const getBlogs = async (): Promise<Blog[]> => {
-  const { data, error } = await supabaseClient
+export const getBlogs = async (authorId?: string): Promise<Blog[]> => {
+  let query = supabaseClient
     .from('blogs')
     .select('*')
     .order('created_at', { ascending: false });
+
+  if (authorId) {
+    query = query.eq('authorId', authorId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching blogs:', error);
@@ -44,14 +50,14 @@ export const getBlogs = async (): Promise<Blog[]> => {
   return data || [];
 };
 
-// Get a single blog
+
 export const getBlog = async (id: string): Promise<Blog | null> => {
   const { data, error } = await supabaseClient
     .from('blogs')
     .select('*')
     .eq('id', id)
     .single();
-
+    console.log(data)
   if (error) {
     console.error('Error fetching blog:', error);
     return null;

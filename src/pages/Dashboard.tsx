@@ -1,5 +1,3 @@
-
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getBlogs, deleteBlog } from '@/lib/api';
@@ -28,13 +26,16 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Blog } from '@/types';
-
+import { useAuth } from '@/context/AuthContext';
 const Dashboard = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
+
   
   const { data: blogs, isLoading, isError, refetch } = useQuery({
-    queryKey: ['blogs'],
-    queryFn: getBlogs,
+    queryKey: ['blogs', user?.id],
+    queryFn: () => getBlogs(user?.id),
+    enabled: !!user?.id,
   });
 
   const handleDelete = async (id: string) => {
@@ -93,7 +94,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Blog Posts</h1>
         <Button asChild>

@@ -1,5 +1,5 @@
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -44,6 +44,11 @@ const TiptapEditor = ({ content, onChange, onImageUpload }: TiptapEditorProps) =
       onChange(editor.getHTML());
     },
   });
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
 
   const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length || !editor) {
@@ -91,8 +96,8 @@ const TiptapEditor = ({ content, onChange, onImageUpload }: TiptapEditorProps) =
   }
 
   return (
-    <div className="border rounded-md">
-      <div className="border-b p-2 flex flex-wrap gap-1">
+    <div className="border w-full max-w-[1200px] ">
+      <div className="border-b w-full p-2 flex flex-wrap gap-1">
         <Button
           type="button"
           variant="ghost"
@@ -192,7 +197,7 @@ const TiptapEditor = ({ content, onChange, onImageUpload }: TiptapEditorProps) =
       </div>
       <EditorContent 
         editor={editor} 
-        className="p-4 min-h-[400px] max-h-[600px] overflow-y-auto prose prose-sm max-w-none focus:outline-none tiptap" 
+        className="p-4 w-full min-h-[500px] max-h-[600px] overflow-y-auto prose prose-sm max-w-none focus:outline-none tiptap" 
       />
     </div>
   );

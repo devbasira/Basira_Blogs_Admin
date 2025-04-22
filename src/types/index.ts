@@ -7,7 +7,7 @@ export interface Blog {
   id: string;
   title: string;
   subheading: string;
-  body: string; // HTML or JSON content
+  body: string; 
   images: string[];
   quotes?: string[];
   tags: string[];
@@ -16,6 +16,8 @@ export interface Blog {
   status: BlogStatus;
   created_at: string;
   updated_at: string;
+  author : string
+  authorId : string
 }
 
 export interface BlogFormData {
@@ -23,6 +25,8 @@ export interface BlogFormData {
   subheading: string;
   body: string;
   images: string[];
+  author : string;
+  authorId : string;
 }
 
 export interface BlogMetadataFormData {

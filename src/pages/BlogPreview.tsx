@@ -1,5 +1,3 @@
-
-import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getBlog, updateBlogMetadata } from '@/lib/api';
@@ -19,15 +17,17 @@ const BlogPreview = () => {
     queryFn: () => getBlog(id || ''),
   });
 
+  console.log(blog)
+
   const publishBlog = async () => {
     if (!id || !blog) return;
-    
+
     try {
       const updatedBlog = await updateBlogMetadata(id, {
         ...blog,
         status: 'published',
       });
-      
+
       if (updatedBlog) {
         toast({
           title: 'Blog published',
@@ -73,14 +73,14 @@ const BlogPreview = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-[30px] pb-[50px]  max-w-[1200px] px-[20px] h-screen overflow-y-auto">
       <div>
         <h1 className="text-2xl font-bold mb-2">Blog Preview</h1>
         <p className="text-muted-foreground">Review your blog post before publishing</p>
       </div>
 
-      <Card className="mx-auto max-w-3xl shadow-sm">
-        <CardContent className="p-6">
+      <Card className="mx-auto w-full">
+        <CardContent className="py-6">
           <div className="space-y-6">
             <div>
               <h2 className="text-3xl font-bold">{blog.title}</h2>
@@ -92,12 +92,19 @@ const BlogPreview = () => {
                   <Badge key={tag} variant="secondary">{tag}</Badge>
                 ))}
               </div>
-              <p className="text-sm text-muted-foreground mt-4">
-                {formatDate(blog.created_at)}
-              </p>
+              <div className='flex '>
+                <p className="text-sm text-muted-foreground mt-4">
+                  {formatDate(blog.created_at)}{" "}
+                  <span className="mx-1 text-gray-500">•</span>
+                  <span className="font-medium text-gray-600">
+                    By {blog.author}
+                  </span>
+                </p>
+
+              </div>
             </div>
 
-            <div 
+            <div
               className="prose max-w-none tiptap"
               dangerouslySetInnerHTML={{ __html: blog.body }}
             />
@@ -114,8 +121,7 @@ const BlogPreview = () => {
                 )}
               </div>
             </div>
-
-            <div>
+            {/* <div>
               <h3 className="font-medium mb-2">Publishing to</h3>
               <div className="flex flex-wrap gap-2">
                 {blog.published_to.length > 0 ? (
@@ -126,8 +132,7 @@ const BlogPreview = () => {
                   <span className="text-muted-foreground text-sm">Not published to any site</span>
                 )}
               </div>
-            </div>
-
+            </div> */}
             <div>
               <h3 className="font-medium mb-2">Status</h3>
               <Badge variant={blog.status === 'published' ? 'default' : 'secondary'}>
@@ -138,32 +143,42 @@ const BlogPreview = () => {
         </CardContent>
       </Card>
 
-      <div className="flex justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mt-6 flex-wrap">
         <Button
           variant="outline"
           onClick={() => navigate(`/blogs/${id}/metadata`)}
+          className="w-full sm:w-auto"
         >
           Back to Metadata
         </Button>
-        <div className="flex gap-3">
-          <Button 
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Button
             variant="outline"
             onClick={() => navigate('/dashboard')}
+            className="w-full sm:w-auto"
           >
             Save as Draft
           </Button>
-          {blog.status !== 'published' && (
-            <Button onClick={publishBlog}>
+
+          {blog.status !== 'published' ? (
+            <Button
+              onClick={publishBlog}
+              className="w-full sm:w-auto"
+            >
               Publish
             </Button>
-          )}
-          {blog.status === 'published' && (
-            <Button onClick={() => navigate('/dashboard')}>
+          ) : (
+            <Button
+              onClick={() => navigate('/dashboard')}
+              className="w-full sm:w-auto"
+            >
               Return to Dashboard
             </Button>
           )}
         </div>
       </div>
+
     </div>
   );
 };

@@ -9,14 +9,18 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import TiptapEditor from '@/components/TiptapEditor';
 import { BlogFormData } from '@/types';
+import { useAuth } from '@/context/AuthContext';
 
 const EditBlog = () => {
   const { id } = useParams<{ id: string }>();
+  const {profile, user} = useAuth();
   const [formData, setFormData] = useState<BlogFormData>({
     title: '',
     subheading: '',
     body: '',
     images: [],
+    author: '', 
+    authorId : ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -34,13 +38,15 @@ const EditBlog = () => {
             subheading: data.subheading,
             body: data.body,
             images: data.images,
+            author: profile.display_name,
+            authorId: user.id
           });
         }
       }
     }
   });
 
-  // Use this effect to set form data when blog is loaded
+
   React.useEffect(() => {
     if (blog) {
       setFormData({
@@ -48,6 +54,8 @@ const EditBlog = () => {
         subheading: blog.subheading,
         body: blog.body,
         images: blog.images,
+        author: profile.display_name,
+        authorId: user.id
       });
     }
   }, [blog]);
@@ -117,7 +125,6 @@ const EditBlog = () => {
       setIsSubmitting(false);
     }
   };
-
   if (isLoading) {
     return <div className="flex items-center justify-center h-64">Loading blog...</div>;
   }
@@ -132,64 +139,65 @@ const EditBlog = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">Edit Blog</h1>
-        <p className="text-muted-foreground">Step 1: Content Creation</p>
+    <div className='h-screen overflow-y-auto '>
+    <div className="w-full max-w-[1200px]  px-4 pb-[80px] space-y-6 ">
+    <div>
+      <h1 className="text-2xl font-bold mb-2">Edit Blog</h1>
+    </div>
+
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="title">Title</Label>
+          <Input
+            id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="Enter the blog title"
+            className="mt-1"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="subheading">Subheading</Label>
+          <Input
+            id="subheading"
+            name="subheading"
+            value={formData.subheading}
+            onChange={handleChange}
+            placeholder="Enter a subheading or brief description"
+            className="mt-1"
+          />
+        </div>
+
+        <div>
+          <Label>Content</Label>
+          <div className="mt-1">
+            <TiptapEditor
+              content={formData.body}
+              onChange={handleEditorChange}
+              onImageUpload={handleImageUpload}
+            />
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Enter the blog title"
-              className="mt-1"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="subheading">Subheading</Label>
-            <Input
-              id="subheading"
-              name="subheading"
-              value={formData.subheading}
-              onChange={handleChange}
-              placeholder="Enter a subheading or brief description"
-              className="mt-1"
-            />
-          </div>
-
-          <div>
-            <Label>Content</Label>
-            <div className="mt-1">
-              <TiptapEditor
-                content={formData.body}
-                onChange={handleEditorChange}
-                onImageUpload={handleImageUpload}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate('/dashboard')}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save & Continue'}
-          </Button>
-        </div>
-      </form>
-    </div>
+      <div className="flex justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => navigate('/dashboard')}
+        >
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Saving...' : 'Save & Continue'}
+        </Button>
+      </div>
+    </form>
+  </div>
+  </div>
   );
 };
 
